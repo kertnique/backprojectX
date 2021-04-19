@@ -2,15 +2,23 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 app = FastAPI()
 
+
+db = {}
+
+
 class Contact(BaseModel):
     id:int
     name:str
     description:str
-@app.get('/contacts')
-async def create_contact(contact: Contact):
-    id = contact.id
-    name = contact.name
-    description = contact.description
+
+
+@app.get('/contacts/{id}', response_model=Contact)
+async def create_contact(id: int):
+    contact = db[id]
+    return contact
+
+
 @app.post('/contacts')
 async def post(contact: Contact):
-    return Contact
+    db[contact.id] = contact
+    return contact
